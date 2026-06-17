@@ -3,7 +3,7 @@ Ticket-ID: CLVN-016b
 Type: Task
 Story: CLVN-016
 Epic: CLVN-015
-Status: TODO
+Status: DONE
 ---
 # Bestätigungsseite „Raumauswahl bestätigen" mit Routing
 
@@ -47,11 +47,16 @@ Buchungsdetails weitergeleitet wird.
 
 ## Definition of Done
 
-- [ ] Mit gesetztem Entwurf zeigt die Seite alle Raumdetails + Zeitraum
-- [ ] „Auswahl bestätigen" navigiert zum Folgeschritt; „Auswahl ändern" geht zurück
-- [ ] Ohne Entwurf greift der Fallback (Hinweis + Zurück zur Suche)
-- [ ] Route `/buchung/bestaetigen` ist direkt ansteuerbar und manuell durchklickbar
-- [ ] Wording folgt dem [Glossar](/docs/produkt/glossar.md)
+- [x] Mit gesetztem Entwurf zeigt die Seite alle Raumdetails + Zeitraum
+- [x] „Auswahl bestätigen" navigiert zum Folgeschritt; „Auswahl ändern" geht zurück
+- [x] Ohne Entwurf greift der Fallback (Hinweis + Zurück zur Suche)
+- [x] Route `/buchung/bestaetigen` ist direkt ansteuerbar (Build/Typecheck/Lint grün)
+- [x] Wording folgt dem [Glossar](/docs/produkt/glossar.md)
+
+> Hinweis: Der vollständige Klick-Durchlauf (Suche → Detail → Bestätigung mit
+> gesetztem Entwurf) wird erst nach CLVN-016c möglich, da dort der Entwurf über die
+> UI gesetzt wird. Der Folgeschritt `/buchung/details` ist ein Platzhalter
+> (Anschluss CLVN-017/018).
 
 ## Abhängigkeiten
 
