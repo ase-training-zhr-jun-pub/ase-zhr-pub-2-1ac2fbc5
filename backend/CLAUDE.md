@@ -87,6 +87,8 @@ gepflegt (vgl. arc42 §Schnittstelle) – aktuell noch nicht vorhanden.
 | `build.gradle.kts` | Dependencies, Plugins, Java-Toolchain |
 | `src/test/kotlin/io/innoq/calvin/BookingServiceApplicationTests.kt` | Context-Load-Smoke-Test |
 | `../scripts/install-sdk.sh` | Installiert das benötigte JDK (Java 21) via SDKMAN |
+| `../scripts/install-ktlint.sh` | Installiert die ktlint-CLI (Kotlin-Formatter) |
+| `../.claude/settings.json` | Enthält u. a. den ktlint-Format-Hook (siehe unten) |
 
 ## Wichtige Bash-Commands
 
@@ -96,6 +98,12 @@ Alle Gradle-Befehle **immer über den Wrapper** (`./gradlew`) ausführen.
 # JDK bereitstellen (einmalig – java ist im Container NICHT vorinstalliert):
 ../scripts/install-sdk.sh
 source "$HOME/.sdkman/bin/sdkman-init.sh"   # java im aktuellen Terminal verfügbar machen
+
+# ktlint bereitstellen (einmalig – wird vom Format-Hook benötigt, braucht java):
+../scripts/install-ktlint.sh
+
+# Kotlin manuell formatieren / prüfen:
+ktlint -F 'src/**/*.kt'   # formatiert in-place (-F); ohne -F nur Lint-Check
 
 # App starten (Standardport 8080):
 ./gradlew bootRun
@@ -118,6 +126,25 @@ curl -s http://localhost:8080/api/hello   # -> "Hello World!"
 
 Falls `./gradlew` mit *„JAVA_HOME is not set"* abbricht: JDK fehlt → obiges
 Install-Skript laufen lassen bzw. `JAVA_HOME` setzen.
+
+## Code-Formatierung (ktlint-Hook)
+
+Der Kotlin-Code wird mit **ktlint** formatiert. Ein **PostToolUse-Hook** in
+[`../.claude/settings.json`](../.claude/settings.json) formatiert jede `.kt`-Datei
+unterhalb von `backend/` nach jedem **Write/Edit** automatisch (`ktlint -F`).
+
+- **Reichweite:** nur `*.kt` unter `backend/` – Frontend/Docs bleiben unberührt.
+- **Nicht blockierend:** Schlägt ktlint fehl oder fehlt es, läuft der Edit normal
+  weiter (der Hook endet mit `|| true`). Das heißt aber auch: **fehlt ktlint,
+  wird stillschweigend nicht formatiert** → einmalig `../scripts/install-ktlint.sh`
+  ausführen.
+- **Voraussetzung:** installiertes JDK (ktlint ist eine JVM-App) + `ktlint` im PATH.
+- **Konsequenz beim Editieren:** Nach einem `Write`/`Edit` kann die Datei vom Hook
+  verändert worden sein (z. B. Einzug, Leerzeilen). Vor einem darauf folgenden
+  `Edit` ggf. neu einlesen, damit `old_string` noch passt.
+- **Stil anpassen:** ktlint liest `.editorconfig`. Aktuell ist keine vorhanden →
+  es gelten die ktlint-Defaults (4-Space-Einzug, eine Leerzeile max., keine
+  Wildcard-Imports …).
 
 ## Run Configurations
 
