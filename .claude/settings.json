@@ -1,33 +1,36 @@
 {
-    "apiKeyHelper": "echo $ANTHROPIC_API_KEY",
-    "model": "claude-sonnet-4-6",
-    "statusLine": {
-        "type": "command",
-        "command": "$CLAUDE_PROJECT_DIR/.claude/statusline.sh"
-    },
-    "attribution": {
-        "commit": "",
-        "pr": ""
-    },
-    "hooks": {
-        "PostToolUse": [
-            {
-                "matcher": "Write|Edit",
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in */backend/*.kt) command -v ktlint >/dev/null 2>&1 && (cd \"${f%%/backend/*}/backend\" && ktlint -F \"${f##*/backend/}\"); esac; } >/dev/null 2>&1 || true",
-                        "statusMessage": "ktlint formatiert Kotlin-Datei …"
-                    }
-                ]
-            }
+  "apiKeyHelper": "echo $ANTHROPIC_API_KEY",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "model": "claude-sonnet-4-6",
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "context7",
+    "playwright",
+    "filesystem",
+    "github"
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in */backend/*.kt) command -v ktlint >/dev/null 2>&1 && (cd \"${f%%/backend/*}/backend\" && ktlint -F \"${f##*/backend/}\"); esac; } >/dev/null 2>&1 || true",
+            "statusMessage": "ktlint formatiert Kotlin-Datei …"
+          }
         ]
-    },
-    "enableAllProjectMcpServers": true,
-    "enabledMcpjsonServers": [
-        "context7",
-        "playwright",
-        "filesystem",
-        "github"
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "$CLAUDE_PROJECT_DIR/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true
+  }
 }
