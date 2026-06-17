@@ -3,7 +3,7 @@ Ticket-ID: CLVN-016a
 Type: Task
 Story: CLVN-016
 Epic: CLVN-015
-Status: TODO
+Status: DONE
 ---
 # Buchungsentwurf im AppState einführen
 
@@ -38,10 +38,10 @@ Ermöglichendes Fundament für:
 
 ## Definition of Done
 
-- [ ] `BuchungsEntwurf` enthält Raum, Standort und Zeitraum, **nicht** Titel/Notiz
-- [ ] `useAppState()` liefert `buchungsEntwurf` plus Setter/Reset
-- [ ] Build & Typecheck grün; bestehende Funktionalität unverändert
-- [ ] Wording folgt dem [Glossar](/docs/produkt/glossar.md)
+- [x] `BuchungsEntwurf` enthält Raum, Standort und Zeitraum, **nicht** Titel/Notiz
+- [x] `useAppState()` liefert `buchungsEntwurf` plus Setter (Reset via `null`)
+- [x] Typecheck (`tsconfig.app.json`) & Lint grün; bestehende Funktionalität unverändert
+- [x] Wording folgt dem [Glossar](/docs/produkt/glossar.md)
 
 ## Abhängigkeiten
 

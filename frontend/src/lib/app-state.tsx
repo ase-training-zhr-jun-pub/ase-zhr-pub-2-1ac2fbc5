@@ -4,6 +4,7 @@ import {
   AKTUELLER_NUTZER,
   MEINE_BUCHUNGEN,
   type Buchung,
+  type BuchungsEntwurf,
 } from "@/lib/mock-data"
 
 interface AppState {
@@ -15,6 +16,10 @@ interface AppState {
   buchungen: Buchung[]
   addBuchung: (b: Omit<Buchung, "id" | "status">) => Buchung
   storniereBuchung: (id: string) => void
+  /** Laufende Raumauswahl im Buchungsprozess (CLVN-016); null = kein Entwurf. */
+  buchungsEntwurf: BuchungsEntwurf | null
+  /** Entwurf starten/aktualisieren oder mit null verwerfen. */
+  setBuchungsEntwurf: (entwurf: BuchungsEntwurf | null) => void
 }
 
 const AppStateContext = createContext<AppState | null>(null)
@@ -27,6 +32,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     () => new Set(["koeln-rhein"]),
   )
   const [buchungen, setBuchungen] = useState<Buchung[]>(MEINE_BUCHUNGEN)
+  const [buchungsEntwurf, setBuchungsEntwurf] = useState<BuchungsEntwurf | null>(null)
 
   const value = useMemo<AppState>(
     () => ({
@@ -49,8 +55,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       },
       storniereBuchung: (id) =>
         setBuchungen((prev) => prev.filter((b) => b.id !== id)),
+      buchungsEntwurf,
+      setBuchungsEntwurf,
     }),
-    [standortId, favoriten, buchungen],
+    [standortId, favoriten, buchungen, buchungsEntwurf],
   )
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>

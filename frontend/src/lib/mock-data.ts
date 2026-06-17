@@ -38,6 +38,20 @@ export interface Buchung {
   status: "anstehend" | "vergangen"
 }
 
+/**
+ * Laufende Raumauswahl im Buchungsprozess: hält den gewählten Konferenzraum samt
+ * Standort und Zeitraum fest, während der Mitarbeiter von der Suche über die
+ * Bestätigung (CLVN-016) zur Eingabe der Buchungsdetails navigiert.
+ * Bewusst ohne Meetingtitel/Buchungsnotiz – die gehören zu CLVN-017/CLVN-018.
+ */
+export interface BuchungsEntwurf {
+  raumId: string
+  standortId: string
+  datum: string // ISO yyyy-mm-dd
+  start: string // HH:MM
+  ende: string // HH:MM
+}
+
 export interface KollegeImBuero {
   name: string
   initialen: string
