@@ -9,7 +9,20 @@
         "commit": "",
         "pr": ""
     },
-    "hooks": {},
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Write|Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; case \"$f\" in */backend/*.kt) command -v ktlint >/dev/null 2>&1 && (cd \"${f%%/backend/*}/backend\" && ktlint -F \"${f##*/backend/}\"); esac; } >/dev/null 2>&1 || true",
+                        "statusMessage": "ktlint formatiert Kotlin-Datei …"
+                    }
+                ]
+            }
+        ]
+    },
     "enableAllProjectMcpServers": true,
     "enabledMcpjsonServers": [
         "context7",
