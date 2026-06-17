@@ -1,7 +1,7 @@
 import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
-import { defineConfig, Plugin } from "vite"
+import { defineConfig, type Plugin } from "vite"
 
 const PORT = 3000
 const BACKEND_PORT = 8080
