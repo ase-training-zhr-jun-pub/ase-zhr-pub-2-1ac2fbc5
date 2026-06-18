@@ -29,7 +29,7 @@ const AUSSTATTUNG_ICONS: Record<AusstattungsMerkmal, React.ElementType> = {
 }
 
 export function RaeumeFindenPage() {
-  const { standortId, favoriten } = useAppState()
+  const { standortId, favoriten, buchungsEntwurf } = useAppState()
   const standort = getStandort(standortId)
 
   const [datum, setDatum] = useState(HEUTE)
@@ -152,7 +152,7 @@ export function RaeumeFindenPage() {
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-semibold text-muted-foreground">Favoriten</h2>
           {favoritenRaeume.map((r) => (
-            <RoomCard key={r.id} raum={r} datum={datum} start={start} ende={ende} gewuenschteAusstattung={ausstattung} />
+            <RoomCard key={r.id} raum={r} datum={datum} start={start} ende={ende} gewuenschteAusstattung={ausstattung} ausgewaehlt={buchungsEntwurf?.raumId === r.id} />
           ))}
           <Separator className="my-1" />
         </section>
@@ -186,6 +186,7 @@ export function RaeumeFindenPage() {
               ende={ende}
               bestMatch={bestMatch?.id === r.id}
               gewuenschteAusstattung={ausstattung}
+              ausgewaehlt={buchungsEntwurf?.raumId === r.id}
             />
           ))
         )}
