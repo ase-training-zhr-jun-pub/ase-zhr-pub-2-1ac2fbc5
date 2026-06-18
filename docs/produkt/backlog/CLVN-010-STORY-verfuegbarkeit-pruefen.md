@@ -2,7 +2,7 @@
 Ticket-ID: CLVN-010
 Type: Story
 Epic: CLVN-007
-Status: TODO
+Status: DONE
 ---
 # Verfügbarkeit prüfen
 

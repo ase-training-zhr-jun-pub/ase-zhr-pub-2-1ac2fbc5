@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
 import { useAppState } from "@/lib/app-state"
 import { getRaum, getStandort } from "@/lib/mock-data"
 import { erstelleBuchung, DoppelbuchungError } from "@/lib/api"
@@ -17,8 +18,11 @@ export function BuchungsdetailsPage() {
   const raum = buchungsEntwurf ? getRaum(buchungsEntwurf.raumId) : undefined
 
   const [titel, setTitel] = useState("")
+  const [titelBeruehrt, setTitelBeruehrt] = useState(false)
   const [notiz, setNotiz] = useState("")
   const [laden, setLaden] = useState(false)
+
+  const titelFehler = titelBeruehrt && !titel.trim()
 
   if (!buchungsEntwurf || !raum) {
     return (
@@ -112,21 +116,31 @@ export function BuchungsdetailsPage() {
         <Input
           id="meetingtitel"
           value={titel}
+          maxLength={100}
           onChange={(e) => setTitel(e.target.value)}
+          onBlur={() => setTitelBeruehrt(true)}
           placeholder="z. B. Team-Sync"
           autoFocus
+          aria-invalid={titelFehler}
         />
+        {titelFehler && (
+          <p className="text-xs text-destructive">Meetingtitel ist ein Pflichtfeld.</p>
+        )}
+        <p className="text-right text-xs text-muted-foreground">{titel.length}/100</p>
       </div>
 
       {/* Buchungsnotiz (CLVN-017) */}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="buchungsnotiz">Buchungsnotiz (optional)</Label>
-        <Input
+        <Textarea
           id="buchungsnotiz"
           value={notiz}
+          maxLength={500}
           onChange={(e) => setNotiz(e.target.value)}
-          placeholder="z. B. VC vorbereiten, externe Teilnehmer"
+          placeholder="z. B. VC vorbereiten, externe Teilnehmer erwartet"
+          rows={3}
         />
+        <p className="text-right text-xs text-muted-foreground">{notiz.length}/500</p>
       </div>
 
       {/* Absenden (CLVN-019) */}

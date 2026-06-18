@@ -2,7 +2,7 @@
 Ticket-ID: CLVN-017
 Type: Story
 Epic: CLVN-015
-Status: TODO
+Status: DONE
 ---
 # Buchungsnotiz hinzufügen
 

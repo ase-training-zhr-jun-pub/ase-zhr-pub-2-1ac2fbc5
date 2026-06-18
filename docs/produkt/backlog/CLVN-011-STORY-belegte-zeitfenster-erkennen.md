@@ -2,7 +2,7 @@
 Ticket-ID: CLVN-011
 Type: Story
 Epic: CLVN-007
-Status: TODO
+Status: DONE
 ---
 # Belegte Zeitfenster erkennen
 

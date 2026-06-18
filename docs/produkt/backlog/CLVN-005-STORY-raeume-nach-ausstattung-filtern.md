@@ -2,7 +2,7 @@
 Ticket-ID: CLVN-005
 Type: Story
 Epic: CLVN-001
-Status: TODO
+Status: DONE
 ---
 # Räume nach Ausstattung filtern
 
