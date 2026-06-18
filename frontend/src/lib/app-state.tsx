@@ -1,11 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react"
-import {
-  AKTUELLER_NUTZER,
-  MEINE_BUCHUNGEN,
-  type Buchung,
-  type BuchungsEntwurf,
-} from "@/lib/mock-data"
+import { AKTUELLER_NUTZER, type BuchungsEntwurf } from "@/lib/mock-data"
+import type { BuchungDto } from "@/lib/api"
 
 interface AppState {
   standortId: string
@@ -13,26 +9,24 @@ interface AppState {
   favoriten: Set<string>
   toggleFavorit: (raumId: string) => void
   istFavorit: (raumId: string) => boolean
-  buchungen: Buchung[]
-  addBuchung: (b: Omit<Buchung, "id" | "status">) => Buchung
-  storniereBuchung: (id: string) => void
   /** Laufende Raumauswahl im Buchungsprozess (CLVN-016); null = kein Entwurf. */
   buchungsEntwurf: BuchungsEntwurf | null
   /** Entwurf starten/aktualisieren oder mit null verwerfen. */
   setBuchungsEntwurf: (entwurf: BuchungsEntwurf | null) => void
+  /** Zuletzt bestätigte Buchung für die Bestätigungsseite (CLVN-020). */
+  letzteBestaetigung: BuchungDto | null
+  setLetzteBestaetigung: (b: BuchungDto | null) => void
 }
 
 const AppStateContext = createContext<AppState | null>(null)
-
-let buchungsZaehler = 2000
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [standortId, setStandortId] = useState(AKTUELLER_NUTZER.heimatStandortId)
   const [favoriten, setFavoriten] = useState<Set<string>>(
     () => new Set(["koeln-rhein"]),
   )
-  const [buchungen, setBuchungen] = useState<Buchung[]>(MEINE_BUCHUNGEN)
   const [buchungsEntwurf, setBuchungsEntwurf] = useState<BuchungsEntwurf | null>(null)
+  const [letzteBestaetigung, setLetzteBestaetigung] = useState<BuchungDto | null>(null)
 
   const value = useMemo<AppState>(
     () => ({
@@ -47,18 +41,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           return next
         }),
       istFavorit: (raumId) => favoriten.has(raumId),
-      buchungen,
-      addBuchung: (b) => {
-        const neu: Buchung = { ...b, id: `b-${buchungsZaehler++}`, status: "anstehend" }
-        setBuchungen((prev) => [neu, ...prev])
-        return neu
-      },
-      storniereBuchung: (id) =>
-        setBuchungen((prev) => prev.filter((b) => b.id !== id)),
       buchungsEntwurf,
       setBuchungsEntwurf,
+      letzteBestaetigung,
+      setLetzteBestaetigung,
     }),
-    [standortId, favoriten, buchungen, buchungsEntwurf],
+    [standortId, favoriten, buchungsEntwurf, letzteBestaetigung],
   )
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>

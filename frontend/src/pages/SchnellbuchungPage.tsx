@@ -12,6 +12,7 @@ import {
   HEUTE,
   istVerfuegbar,
 } from "@/lib/mock-data"
+import { erstelleBuchung, DoppelbuchungError } from "@/lib/api"
 
 // Für den Prototyp ein fixes "Jetzt"-Fenster (30 Min), damit Screenshots stabil sind.
 const JETZT_START = "15:30"
@@ -19,29 +20,39 @@ const JETZT_ENDE = "16:00"
 
 export function SchnellbuchungPage() {
   const navigate = useNavigate()
-  const { standortId, addBuchung } = useAppState()
+  const { standortId, setLetzteBestaetigung } = useAppState()
   const standort = getStandort(standortId)
   const [dauer, setDauer] = useState(30)
+  const [laden, setLaden] = useState(false)
 
   const ende = dauer === 30 ? JETZT_ENDE : "16:30"
   const vorschlag = getRaeumeByStandort(standortId).find((r) =>
     istVerfuegbar(r, HEUTE, JETZT_START, ende),
   )
 
-  function buchen() {
+  async function buchen() {
     if (!vorschlag) return
-    addBuchung({
-      raumId: vorschlag.id,
-      standortId,
-      datum: HEUTE,
-      start: JETZT_START,
-      ende,
-      titel: "Schnellbuchung",
-    })
-    toast.success("Schnell gebucht", {
-      description: `${vorschlag.name} · ${JETZT_START}–${ende}`,
-    })
-    navigate("/buchungen")
+    setLaden(true)
+    try {
+      const buchung = await erstelleBuchung({
+        raumId: vorschlag.id,
+        standortId,
+        datum: HEUTE,
+        start: JETZT_START,
+        ende,
+        titel: "Schnellbuchung",
+      })
+      setLetzteBestaetigung(buchung)
+      navigate("/buchung/bestaetigung")
+    } catch (e) {
+      if (e instanceof DoppelbuchungError) {
+        toast.error("Raum bereits belegt", { description: "Bitte versuche einen anderen Raum." })
+      } else {
+        toast.error("Buchung fehlgeschlagen", { description: "Bitte versuche es erneut." })
+      }
+    } finally {
+      setLaden(false)
+    }
   }
 
   return (
@@ -88,7 +99,7 @@ export function SchnellbuchungPage() {
                 <Badge key={a} variant="secondary" className="font-normal">{a}</Badge>
               ))}
             </div>
-            <Button size="lg" className="w-full" onClick={buchen}>
+            <Button size="lg" className="w-full" disabled={laden} onClick={buchen}>
               Jetzt buchen · {JETZT_START}–{ende}
             </Button>
           </CardContent>
