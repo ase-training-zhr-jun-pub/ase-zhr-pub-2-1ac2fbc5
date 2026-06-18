@@ -2,7 +2,7 @@
 Ticket-ID: CLVN-020
 Type: Story
 Epic: CLVN-015
-Status: TODO
+Status: DONE
 ---
 # Buchungsbestätigung erhalten
 

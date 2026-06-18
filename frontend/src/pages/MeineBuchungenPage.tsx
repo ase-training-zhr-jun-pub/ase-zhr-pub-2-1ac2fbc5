@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import { getRaum, getRaeumeByStandort, getStandort } from "@/lib/mock-data"
 import { getMeineBuchungen, storniereBuchungApi, aendereBuchung, DoppelbuchungError, type BuchungDto } from "@/lib/api"
 import { exportiereAlsIcs } from "@/lib/ics"
@@ -27,6 +28,7 @@ function BuchungsKarte({
   const raum = getRaum(buchung.raumId)
   const standort = getStandort(buchung.standortId)
   const [bearbeiten, setBearbeiten] = useState(false)
+  const [stornierenOffen, setStornierenOffen] = useState(false)
   const [datum, setDatum] = useState(buchung.datum)
   const [start, setStart] = useState(buchung.start)
   const [ende, setEnde] = useState(buchung.ende)
@@ -133,9 +135,25 @@ function BuchungsKarte({
                 >
                   <CalendarPlus className="size-4" /> .ics
                 </Button>
-                <Button variant="outline" size="sm" className="flex-1 text-destructive hover:text-destructive" onClick={stornieren}>
+                <Button variant="outline" size="sm" className="flex-1 text-destructive hover:text-destructive" onClick={() => setStornierenOffen(true)}>
                   <Trash2 className="size-4" /> Stornieren
                 </Button>
+                <Dialog open={stornierenOffen} onOpenChange={setStornierenOffen}>
+                  <DialogContent showCloseButton={false}>
+                    <DialogHeader>
+                      <DialogTitle>Buchung stornieren?</DialogTitle>
+                      <DialogDescription>
+                        {raum?.name ?? buchung.raumId} am {formatDatum(buchung.datum)}, {buchung.start}–{buchung.ende} wird unwiderruflich storniert.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose render={<Button variant="outline" />}>Abbrechen</DialogClose>
+                      <Button variant="destructive" onClick={() => { setStornierenOffen(false); stornieren() }}>
+                        Ja, stornieren
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </>
