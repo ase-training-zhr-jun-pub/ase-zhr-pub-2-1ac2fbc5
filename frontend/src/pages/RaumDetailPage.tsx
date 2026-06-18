@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { ArrowLeft, Users, MapPin, Star, CheckCircle, XCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { useAppState } from "@/lib/app-state"
-import { getRaum, getStandort, getStundenRaster, HEUTE, istVerfuegbar } from "@/lib/mock-data"
+import { findeAlternativeZeitfenster, getRaum, getStandort, getStundenRaster, HEUTE, istVerfuegbar } from "@/lib/mock-data"
 import { pruefeVerfuegbarkeit } from "@/lib/api"
 
 export function RaumDetailPage() {
@@ -53,6 +53,11 @@ export function RaumDetailPage() {
   // Kombination: mock-Belegung (statische Daten) UND Backend-Stand
   const mockVerfuegbar = istVerfuegbar(raum, datum, start, ende)
   const verfuegbar = mockVerfuegbar && (backendVerfuegbar ?? true)
+
+  const alternativeZeitfenster = useMemo(
+    () => (verfuegbar || prueft ? [] : findeAlternativeZeitfenster(raum, datum, start, ende)),
+    [verfuegbar, prueft, raum, datum, start, ende],
+  )
 
   function raumAuswaehlen() {
     setBuchungsEntwurf({
@@ -202,6 +207,31 @@ export function RaumDetailPage() {
           </>
         )}
       </div>
+
+      {/* Alternative Zeitfenster (CLVN-012) */}
+      {!verfuegbar && !prueft && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-medium">Alternative Zeitfenster</p>
+          {alternativeZeitfenster.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {alternativeZeitfenster.map((alt) => (
+                <Button
+                  key={`${alt.start}-${alt.ende}`}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setStart(alt.start); setEnde(alt.ende) }}
+                >
+                  {alt.start}–{alt.ende}
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Kein freies Zeitfenster am gewählten Tag verfügbar.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Raum auswählen (CLVN-016c) */}
       <Button

@@ -12,7 +12,6 @@
 - [CLVN-004 Räume nach Kapazität filtern](CLVN-004-STORY-raeume-nach-kapazitaet-filtern.md)
 - [CLVN-005 Räume nach Ausstattung filtern](CLVN-005-STORY-raeume-nach-ausstattung-filtern.md)
 - [CLVN-011 Belegte Zeitfenster erkennen](CLVN-011-STORY-belegte-zeitfenster-erkennen.md)
-- [CLVN-012 Alternative Zeitfenster anzeigen](CLVN-012-STORY-alternative-zeitfenster-anzeigen.md)
 - [CLVN-013 Ausstattung abgleichen](CLVN-013-STORY-ausstattung-abgleichen.md)
 - [CLVN-016 Raumauswahl bestätigen](CLVN-016-STORY-raumauswahl-bestaetigen.md)
   - [CLVN-016a Buchungsentwurf im AppState einführen](CLVN-016a-TASK-buchungsentwurf-im-appstate.md)
@@ -34,4 +33,5 @@
 - [CLVN-008 Datum auswählen](CLVN-008-STORY-datum-auswaehlen.md)
 - [CLVN-009 Zeitraum festlegen](CLVN-009-STORY-zeitraum-festlegen.md)
 - [CLVN-014 Arbeitsplatz auswählen](CLVN-014-STORY-arbeitsplatz-auswaehlen.md)
+- [CLVN-012 Alternative Zeitfenster anzeigen](CLVN-012-STORY-alternative-zeitfenster-anzeigen.md)
 - [CLVN-022 Meine Buchungen aufrufen](CLVN-022-STORY-meine-buchungen-aufrufen.md)

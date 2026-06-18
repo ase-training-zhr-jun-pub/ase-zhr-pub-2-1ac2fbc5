@@ -271,6 +271,13 @@ function toMin(t: string): number {
   return h * 60 + m
 }
 
+/** Minuten seit Mitternacht in "HH:MM" */
+function fromMin(min: number): string {
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+}
+
 /** Prüft, ob ein Raum im gewünschten Zeitfenster verfügbar ist (CLVN-010/011). */
 export function istVerfuegbar(
   raum: Konferenzraum,
@@ -300,6 +307,36 @@ export function getStundenRaster(
     raster.push({ stunde: h, belegt: !!treffer, titel: treffer?.titel })
   }
   return raster
+}
+
+/**
+ * Findet alternative Zeitfenster gleicher Dauer am selben Tag (CLVN-012).
+ * Gibt bis zu 6 Slots zurück, sortiert nach zeitlicher Nähe zum Wunschtermin.
+ */
+export function findeAlternativeZeitfenster(
+  raum: Konferenzraum,
+  datum: string,
+  start: string,
+  ende: string,
+): Array<{ start: string; ende: string }> {
+  const dauerMin = toMin(ende) - toMin(start)
+  if (dauerMin <= 0) return []
+  const ARBEITSBEGINN = 8 * 60
+  const ARBEITSENDE = 18 * 60
+  const wunschStart = toMin(start)
+  const kandidaten: Array<{ start: string; ende: string; abstand: number }> = []
+  for (let s = ARBEITSBEGINN; s <= ARBEITSENDE - dauerMin; s += 30) {
+    const candidateStart = fromMin(s)
+    const candidateEnde = fromMin(s + dauerMin)
+    if (candidateStart === start) continue
+    if (istVerfuegbar(raum, datum, candidateStart, candidateEnde)) {
+      kandidaten.push({ start: candidateStart, ende: candidateEnde, abstand: Math.abs(s - wunschStart) })
+    }
+  }
+  return kandidaten
+    .sort((a, b) => a.abstand - b.abstand)
+    .slice(0, 6)
+    .map(({ start, ende }) => ({ start, ende }))
 }
 
 /**
