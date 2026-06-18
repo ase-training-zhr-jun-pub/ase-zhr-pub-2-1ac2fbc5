@@ -14,18 +14,29 @@ interface RoomCardProps {
   ende: string
   /** Hebt die Karte als Smart-Empfehlung hervor */
   bestMatch?: boolean
+  /** Hebt die Karte als aktuell ausgewählten Buchungsentwurf hervor (CLVN-016d) */
+  ausgewaehlt?: boolean
 }
 
-export function RoomCard({ raum, datum, start, ende, bestMatch }: RoomCardProps) {
+export function RoomCard({ raum, datum, start, ende, bestMatch, ausgewaehlt }: RoomCardProps) {
   const navigate = useNavigate()
   const { istFavorit, toggleFavorit } = useAppState()
   const verfuegbar = istVerfuegbar(raum, datum, start, ende)
   const favorit = istFavorit(raum.id)
 
   return (
-    <Card className={cn("relative", bestMatch && "border-primary ring-1 ring-primary")}>
+    <Card className={cn(
+      "relative",
+      bestMatch && "border-primary ring-1 ring-primary",
+      ausgewaehlt && "border-amber-400 ring-2 ring-amber-400",
+    )}>
       {bestMatch && (
         <Badge className="absolute -top-2 left-3 bg-primary">Beste Wahl</Badge>
+      )}
+      {ausgewaehlt && (
+        <Badge className="absolute -top-2 left-3 border-amber-400 bg-amber-50 text-amber-700">
+          Ausgewählt
+        </Badge>
       )}
       <CardContent className="flex flex-col gap-3 p-4">
         <div className="flex items-start justify-between">
