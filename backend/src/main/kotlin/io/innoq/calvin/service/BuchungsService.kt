@@ -50,6 +50,25 @@ class BuchungsService(private val repo: BuchungRepository) {
     }
 
     @Transactional
+    fun buchungAendern(
+        id: String,
+        nutzerId: String,
+        raumId: String,
+        standortId: String,
+        datum: String,
+        start: String,
+        ende: String,
+        titel: String,
+        notiz: String?,
+    ): Buchung {
+        val buchung = repo.findById(id).orElseThrow { BuchungNichtGefundenException("Buchung $id nicht gefunden") }
+        if (buchung.nutzerId != nutzerId) throw BuchungNichtGefundenException("Buchung $id gehört nicht zu Nutzer $nutzerId")
+        val konflikte = repo.findKonflikteMitLockOhne(raumId, datum, start, ende, id)
+        if (konflikte.isNotEmpty()) throw DoppelbuchungsException("Der Konferenzraum ist für diesen Zeitraum bereits belegt.")
+        return repo.save(buchung.copy(raumId = raumId, standortId = standortId, datum = datum, start = start, ende = ende, titel = titel, notiz = notiz))
+    }
+
+    @Transactional
     fun buchungStornieren(
         id: String,
         nutzerId: String,

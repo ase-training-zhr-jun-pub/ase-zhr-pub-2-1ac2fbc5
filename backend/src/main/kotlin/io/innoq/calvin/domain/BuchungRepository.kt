@@ -17,6 +17,16 @@ interface BuchungRepository : JpaRepository<Buchung, String> {
         ende: String,
     ): List<Buchung>
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT b FROM Buchung b WHERE b.raumId = :raumId AND b.datum = :datum AND b.start < :ende AND b.ende > :start AND b.id <> :ausschliessen")
+    fun findKonflikteMitLockOhne(
+        raumId: String,
+        datum: String,
+        start: String,
+        ende: String,
+        ausschliessen: String,
+    ): List<Buchung>
+
     @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Buchung b WHERE b.raumId = :raumId AND b.datum = :datum AND b.start < :ende AND b.ende > :start")
     fun hatKonflikte(
         raumId: String,

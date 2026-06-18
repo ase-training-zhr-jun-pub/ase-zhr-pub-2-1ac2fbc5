@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
@@ -72,6 +73,33 @@ class BuchungController(private val service: BuchungsService) {
             ResponseEntity.status(HttpStatus.CREATED).body(buchung.toResponse())
         } catch (e: DoppelbuchungsException) {
             ResponseEntity.status(HttpStatus.CONFLICT).build()
+        }
+    }
+
+    @PutMapping("/buchungen/{id}")
+    fun buchungAendern(
+        @RequestHeader("Authorization") auth: String,
+        @PathVariable id: String,
+        @RequestBody req: BuchungRequest,
+    ): ResponseEntity<BuchungResponse> {
+        val nutzerId = extractNutzerId(auth)
+        return try {
+            val buchung = service.buchungAendern(
+                id = id,
+                nutzerId = nutzerId,
+                raumId = req.raumId,
+                standortId = req.standortId,
+                datum = req.datum,
+                start = req.start,
+                ende = req.ende,
+                titel = req.titel,
+                notiz = req.notiz,
+            )
+            ResponseEntity.ok(buchung.toResponse())
+        } catch (e: DoppelbuchungsException) {
+            ResponseEntity.status(HttpStatus.CONFLICT).build()
+        } catch (e: Exception) {
+            ResponseEntity.notFound().build()
         }
     }
 

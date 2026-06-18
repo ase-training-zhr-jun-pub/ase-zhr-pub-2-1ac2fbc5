@@ -51,6 +51,17 @@ export async function erstelleBuchung(dto: NeueBuchungDto): Promise<BuchungDto> 
   return res.json()
 }
 
+export async function aendereBuchung(id: string, dto: NeueBuchungDto): Promise<BuchungDto> {
+  const res = await fetch(`${API_BASE}/api/buchungen/${id}`, {
+    method: "PUT",
+    headers: { ...authHeader(), "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  })
+  if (res.status === 409) throw new DoppelbuchungError()
+  if (!res.ok) throw new Error("Fehler beim Ändern der Buchung")
+  return res.json()
+}
+
 export async function storniereBuchungApi(id: string): Promise<void> {
   const res = await fetch(`${API_BASE}/api/buchungen/${id}`, {
     method: "DELETE",
