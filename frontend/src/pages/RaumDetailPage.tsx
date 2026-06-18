@@ -1,15 +1,22 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { ArrowLeft, Users, MapPin, Star, CheckCircle, XCircle, Loader2 } from "lucide-react"
+import { ArrowLeft, Users, MapPin, Star, CheckCircle, XCircle, Loader2, Projector, PenLine, Video, Monitor, Phone, CheckCircle2, CircleX } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { useAppState } from "@/lib/app-state"
-import { findeAlternativeZeitfenster, getRaum, getStandort, getStundenRaster, HEUTE, istVerfuegbar } from "@/lib/mock-data"
+import { ALLE_AUSSTATTUNG, findeAlternativeZeitfenster, getRaum, getStandort, getStundenRaster, HEUTE, istVerfuegbar, type AusstattungsMerkmal } from "@/lib/mock-data"
 import { pruefeVerfuegbarkeit } from "@/lib/api"
+
+const AUSSTATTUNG_ICONS: Record<AusstattungsMerkmal, React.ElementType> = {
+  Beamer: Projector,
+  Whiteboard: PenLine,
+  "VC-Equipment": Video,
+  Display: Monitor,
+  Telefon: Phone,
+}
 
 export function RaumDetailPage() {
   const { roomId } = useParams()
@@ -107,13 +114,34 @@ export function RaumDetailPage() {
         </span>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
-        {raum.ausstattung.map((a) => (
-          <Badge key={a} variant="secondary" className="font-normal">
-            {a}
-          </Badge>
-        ))}
-      </div>
+      <Card>
+        <CardContent className="flex flex-col gap-2 p-4">
+          <p className="text-sm font-medium">Ausstattung</p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            {ALLE_AUSSTATTUNG.map((a) => {
+              const vorhanden = raum.ausstattung.includes(a)
+              const Icon = AUSSTATTUNG_ICONS[a]
+              return (
+                <div
+                  key={a}
+                  className={cn(
+                    "flex items-center gap-2 text-sm",
+                    vorhanden ? "text-foreground" : "text-muted-foreground",
+                  )}
+                >
+                  {vorhanden ? (
+                    <CheckCircle2 className="size-4 shrink-0 text-emerald-500" />
+                  ) : (
+                    <CircleX className="size-4 shrink-0 text-muted-foreground/50" />
+                  )}
+                  <Icon className="size-4 shrink-0" />
+                  <span className={cn(!vorhanden && "line-through")}>{a}</span>
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Verfügbarkeits-Timeline (Übersicht aus Mock-Daten) */}
       <Card>

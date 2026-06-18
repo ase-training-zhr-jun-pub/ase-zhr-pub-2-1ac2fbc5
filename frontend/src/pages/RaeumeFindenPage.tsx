@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Users } from "lucide-react"
+import { Users, Projector, PenLine, Video, Monitor, Phone } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +19,14 @@ import {
   KOLLEGEN_IM_BUERO,
   type AusstattungsMerkmal,
 } from "@/lib/mock-data"
+
+const AUSSTATTUNG_ICONS: Record<AusstattungsMerkmal, React.ElementType> = {
+  Beamer: Projector,
+  Whiteboard: PenLine,
+  "VC-Equipment": Video,
+  Display: Monitor,
+  Telefon: Phone,
+}
 
 export function RaeumeFindenPage() {
   const { standortId, favoriten } = useAppState()
@@ -98,12 +106,14 @@ export function RaeumeFindenPage() {
             <div className="flex flex-wrap gap-1.5">
               {ALLE_AUSSTATTUNG.map((a) => {
                 const aktiv = ausstattung.includes(a)
+                const Icon = AUSSTATTUNG_ICONS[a]
                 return (
                   <button key={a} onClick={() => toggleAusstattung(a)}>
                     <Badge
                       variant={aktiv ? "default" : "outline"}
-                      className={cn("cursor-pointer font-normal", !aktiv && "hover:bg-muted")}
+                      className={cn("cursor-pointer gap-1 font-normal", !aktiv && "hover:bg-muted")}
                     >
+                      <Icon className="size-3" />
                       {a}
                     </Badge>
                   </button>
@@ -142,7 +152,7 @@ export function RaeumeFindenPage() {
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-semibold text-muted-foreground">Favoriten</h2>
           {favoritenRaeume.map((r) => (
-            <RoomCard key={r.id} raum={r} datum={datum} start={start} ende={ende} />
+            <RoomCard key={r.id} raum={r} datum={datum} start={start} ende={ende} gewuenschteAusstattung={ausstattung} />
           ))}
           <Separator className="my-1" />
         </section>
@@ -175,6 +185,7 @@ export function RaeumeFindenPage() {
               start={start}
               ende={ende}
               bestMatch={bestMatch?.id === r.id}
+              gewuenschteAusstattung={ausstattung}
             />
           ))
         )}

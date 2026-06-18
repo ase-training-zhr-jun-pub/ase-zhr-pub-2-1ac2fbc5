@@ -1,11 +1,19 @@
 import { useNavigate } from "react-router-dom"
-import { Star, Users, MapPin } from "lucide-react"
+import { Star, Users, MapPin, Projector, PenLine, Video, Monitor, Phone } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useAppState } from "@/lib/app-state"
-import { istVerfuegbar, type Konferenzraum } from "@/lib/mock-data"
+import { istVerfuegbar, type AusstattungsMerkmal, type Konferenzraum } from "@/lib/mock-data"
+
+const AUSSTATTUNG_ICONS: Record<AusstattungsMerkmal, React.ElementType> = {
+  Beamer: Projector,
+  Whiteboard: PenLine,
+  "VC-Equipment": Video,
+  Display: Monitor,
+  Telefon: Phone,
+}
 
 interface RoomCardProps {
   raum: Konferenzraum
@@ -14,9 +22,11 @@ interface RoomCardProps {
   ende: string
   /** Hebt die Karte als Smart-Empfehlung hervor */
   bestMatch?: boolean
+  /** Vom Nutzer gewünschte Ausstattung – hebt Treffer hervor */
+  gewuenschteAusstattung?: AusstattungsMerkmal[]
 }
 
-export function RoomCard({ raum, datum, start, ende, bestMatch }: RoomCardProps) {
+export function RoomCard({ raum, datum, start, ende, bestMatch, gewuenschteAusstattung }: RoomCardProps) {
   const navigate = useNavigate()
   const { istFavorit, toggleFavorit } = useAppState()
   const verfuegbar = istVerfuegbar(raum, datum, start, ende)
@@ -50,11 +60,20 @@ export function RoomCard({ raum, datum, start, ende, bestMatch }: RoomCardProps)
         </div>
 
         <div className="flex flex-wrap gap-1.5">
-          {raum.ausstattung.map((a) => (
-            <Badge key={a} variant="secondary" className="font-normal">
-              {a}
-            </Badge>
-          ))}
+          {raum.ausstattung.map((a) => {
+            const Icon = AUSSTATTUNG_ICONS[a]
+            const gefordert = gewuenschteAusstattung?.includes(a)
+            return (
+              <Badge
+                key={a}
+                variant={gefordert ? "default" : "secondary"}
+                className="gap-1 font-normal"
+              >
+                <Icon className="size-3" />
+                {a}
+              </Badge>
+            )
+          })}
         </div>
 
         <div className="flex items-center justify-between">
