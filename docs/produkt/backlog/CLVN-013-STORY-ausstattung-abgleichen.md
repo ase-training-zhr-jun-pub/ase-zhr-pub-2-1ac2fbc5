@@ -2,7 +2,7 @@
 Ticket-ID: CLVN-013
 Type: Story
 Epic: CLVN-007
-Status: TODO
+Status: DONE
 ---
 # Ausstattung abgleichen
 

@@ -3,7 +3,7 @@ Ticket-ID: CLVN-016c
 Type: Task
 Story: CLVN-016
 Epic: CLVN-015
-Status: TODO
+Status: DONE
 ---
 # Raumauswahl auf der Detailseite an den Bestätigungsschritt anbinden
 

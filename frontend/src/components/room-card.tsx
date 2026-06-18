@@ -24,29 +24,26 @@ interface RoomCardProps {
   bestMatch?: boolean
   /** Vom Nutzer gewünschte Ausstattung – hebt Treffer hervor */
   gewuenschteAusstattung?: AusstattungsMerkmal[]
-  /** Hebt die Karte als aktuell ausgewählten Buchungsentwurf hervor (CLVN-016d) */
-  ausgewaehlt?: boolean
 }
 
-export function RoomCard({ raum, datum, start, ende, bestMatch, gewuenschteAusstattung, ausgewaehlt }: RoomCardProps) {
+export function RoomCard({ raum, datum, start, ende, bestMatch, gewuenschteAusstattung }: RoomCardProps) {
   const navigate = useNavigate()
-  const { istFavorit, toggleFavorit } = useAppState()
+  const { istFavorit, toggleFavorit, buchungsEntwurf } = useAppState()
   const verfuegbar = istVerfuegbar(raum, datum, start, ende)
   const favorit = istFavorit(raum.id)
+  const istAusgewaehlt = buchungsEntwurf?.raumId === raum.id
 
   return (
     <Card className={cn(
       "relative",
       bestMatch && "border-primary ring-1 ring-primary",
-      ausgewaehlt && "border-amber-400 ring-2 ring-amber-400",
+      istAusgewaehlt && !bestMatch && "border-emerald-500 ring-2 ring-emerald-500",
     )}>
       {bestMatch && (
         <Badge className="absolute -top-2 left-3 bg-primary">Beste Wahl</Badge>
       )}
-      {ausgewaehlt && (
-        <Badge className="absolute -top-2 left-3 border-amber-400 bg-amber-50 text-amber-700">
-          Ausgewählt
-        </Badge>
+      {istAusgewaehlt && (
+        <Badge className="absolute -top-2 right-3 bg-emerald-600">Ausgewählt</Badge>
       )}
       <CardContent className="flex flex-col gap-3 p-4">
         <div className="flex items-start justify-between">

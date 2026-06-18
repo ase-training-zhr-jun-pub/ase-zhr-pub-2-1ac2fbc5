@@ -21,7 +21,7 @@ const AUSSTATTUNG_ICONS: Record<AusstattungsMerkmal, React.ElementType> = {
 export function RaumDetailPage() {
   const { roomId } = useParams()
   const navigate = useNavigate()
-  const { istFavorit, toggleFavorit, setBuchungsEntwurf } = useAppState()
+  const { istFavorit, toggleFavorit, setBuchungsEntwurf, buchungsEntwurf } = useAppState()
   const raum = roomId ? getRaum(roomId) : undefined
 
   const [datum, setDatum] = useState(HEUTE)
@@ -57,9 +57,15 @@ export function RaumDetailPage() {
   const standort = getStandort(raum.standortId)
   const raster = getStundenRaster(raum, datum)
   const favorit = istFavorit(raum.id)
+  const zeitfensterUngueltig = start >= ende
   // Kombination: mock-Belegung (statische Daten) UND Backend-Stand
   const mockVerfuegbar = istVerfuegbar(raum, datum, start, ende)
-  const verfuegbar = mockVerfuegbar && (backendVerfuegbar ?? true)
+  const verfuegbar = !zeitfensterUngueltig && mockVerfuegbar && (backendVerfuegbar ?? true)
+  const istAusgewaehlt =
+    buchungsEntwurf?.raumId === raum.id &&
+    buchungsEntwurf.datum === datum &&
+    buchungsEntwurf.start === start &&
+    buchungsEntwurf.ende === ende
 
   const alternativeZeitfenster = useMemo(
     () => (verfuegbar || prueft ? [] : findeAlternativeZeitfenster(raum, datum, start, ende)),
@@ -92,9 +98,14 @@ export function RaumDetailPage() {
       </div>
 
       <div className="flex items-start justify-between">
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold">{raum.name}</h1>
           <p className="text-sm text-muted-foreground">Standort {standort?.name}</p>
+          {istAusgewaehlt && (
+            <span className="flex w-fit items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+              <CheckCircle className="size-3" /> Ausgewählt
+            </span>
+          )}
         </div>
         <button
           onClick={() => toggleFavorit(raum.id)}
@@ -265,7 +276,7 @@ export function RaumDetailPage() {
       <Button
         size="lg"
         className="w-full"
-        disabled={!verfuegbar || prueft}
+        disabled={!verfuegbar || prueft || zeitfensterUngueltig}
         onClick={raumAuswaehlen}
       >
         Raum auswählen

@@ -3,7 +3,7 @@ Ticket-ID: CLVN-016d
 Type: Task
 Story: CLVN-016
 Epic: CLVN-015
-Status: TODO
+Status: DONE
 ---
 # Visuelle Hervorhebung des ausgewählten Raums in der Ergebnisliste
 
